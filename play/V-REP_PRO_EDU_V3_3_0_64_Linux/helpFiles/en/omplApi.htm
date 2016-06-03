@@ -1,0 +1,699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN"><html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta http-equiv="Content-Language" content="en-us">
+      <title>API Functions</title>
+      <link rel="stylesheet" type="text/css" href="../../helpFiles/style.css">
+   </head>
+   <body>
+      <div align="center">
+         <table class="allEncompassingTable">
+            <tr>
+               <td>
+				   <p><a href="../index.html" TARGET="_top"><img src="images/homeImg.png"></a></p>
+                  <h1>OMPL Plugin API reference</h1>
+                  <p class="infoBox">The list of API functions below allows you to define and solve a motion planning problem
+                 with <a href="http://ompl.kavrakilab.org/">OMPL</a>. </p>
+                  <h3 class="subsectionBar"><a name="simExtOMPL_compute" id="simExtOMPL_compute"></a>simExtOMPL_compute
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Use OMPL to find a solution for this motion planning task.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result, table states=simExtOMPL_compute(number taskHandle, number maxTime,
+                           number maxSimplificationTime=-1, number stateCnt=0)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>maxTime</strong>: maximum time used for the path searching procedure, in seconds.
+                           </div>
+                           <div><strong>maxSimplificationTime</strong>: (optional) maximum time used for the path simplification procedure, in seconds. -1
+                              for a default simplification procedure, 0 for no simplification.
+                           </div>
+                           <div><strong>stateCnt</strong>: (optional) minimum number of states to be returned. 0 for a default behaviour.
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>states</strong>: a table of states, representing the solution, from start to goal. States are specified
+                              linearly.
+                           </div>
+                        </td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_createStateSpace" id="simExtOMPL_createStateSpace"></a>simExtOMPL_createStateSpace
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Create a component of the state space for the motion planning problem.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number stateSpaceHandle=simExtOMPL_createStateSpace(string name, number type, number
+                           objectHandle, table boundsLow, table boundsHigh, number useForProjection, number weight,
+                           number refObjectHandle)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>name</strong>: a name for this state space
+                           </div>
+                           <div><strong>type</strong>: the type of this state space component (must be one of sim_ompl_statespacetype_position2d,
+                              sim_ompl_statespacetype_pose2d, sim_ompl_statespacetype_position3d, sim_ompl_statespacetype_pose3d,
+                              sim_ompl_statespacetype_joint_position)
+                           </div>
+                           <div><strong>objectHandle</strong>: the object handle (a joint object if type is sim_ompl_statespacetype_joint_position,
+                              otherwise a shape)
+                           </div>
+                           <div><strong>boundsLow</strong>: lower bounds (if type is pose, specify only the 3 position components)
+                           </div>
+                           <div><strong>boundsHigh</strong>: upper bounds (if type is pose, specify only the 3 position components)
+                           </div>
+                           <div><strong>useForProjection</strong>: if true, this object position or joint value will be used for computing a default
+                              projection
+                           </div>
+                           <div><strong>weight</strong>: (optional) the weight of this state space component, used for computing distance between
+                              states. Default value is 1.0
+                           </div>
+                           <div><strong>refObjectHandle</strong>: (optional) an object handle relative to which reference frame position/orientations
+                              will be evaluated. Default value is -1, for the absolute reference frame
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>stateSpaceHandle</strong>: a handle to the created state space component
+                           </div>
+                        </td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_createTask" id="simExtOMPL_createTask"></a>simExtOMPL_createTask
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Create a task object, used to represent the motion planning task. A task object contains
+                           informations about: 
+                           <ul>
+                              <li>collision pairs (used by the default state validity checker)</li>
+                              <li>state spaces</li>
+                              <li>start state</li>
+                              <li>goal state, or goal specification (e.g. pair of dummies, Lua callback, ...)</li>
+                              <li>various Lua callbacks (projection evaluation, state validation, goal satisfaction)</li>
+                           </ul><br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number taskHandle=simExtOMPL_createTask(string name)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>name</strong>: a name for this task object
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>taskHandle</strong>: a handle to the created task object
+                           </div>
+                        </td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_destroyStateSpace" id="simExtOMPL_destroyStateSpace"></a>simExtOMPL_destroyStateSpace
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Destroy the spacified state space component.<br><br>Note: state space components created during simulation are automatically destroyed
+                           when simulation ends.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_destroyStateSpace(number stateSpaceHandle)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>stateSpaceHandle</strong>: handle to state space component
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_destroyTask" id="simExtOMPL_destroyTask"></a>simExtOMPL_destroyTask
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Destroy the specified task object.<br><br>Note: task objects created during simulation are automatically destroyed when simulation
+                           ends.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_destroyTask(number taskHandle)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                       </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+                  
+                  
+                  
+                  <br>
+                  <h3 class="subsectionBar"><a name="simExtOMPL_isStateValid" id="simExtOMPL_isStateValid"></a>simExtOMPL_isStateValid
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Check if the specified state is valid. If a state validation callback has been specified, that will be used to determine the validity of the state, otherwise the default state validation method will be used.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_isStateValid(number taskHandle, table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>state</strong>: a table of numbers, whose size must be consistent with the robot's state space specified in this task object</div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 1 in case of success</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_printTaskInfo" id="simExtOMPL_printTaskInfo"></a>simExtOMPL_printTaskInfo
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Print a summary of the specified task object. Useful for debugging and submitting
+                           bug reports.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_printTaskInfo(number taskHandle)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+
+
+                  <br>
+                  <h3 class="subsectionBar"><a name="simExtOMPL_readState" id="simExtOMPL_readState"></a>simExtOMPL_readState
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Read a state vector from current simulator state.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result, table state=simExtOMPL_readState(number taskHandle)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 1 in case of success</div>
+                           <div><strong>state</strong>: state (vector)</div>
+                        </td>
+                     </tr>
+                  </table>
+
+
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setAlgorithm" id="simExtOMPL_setAlgorithm"></a>simExtOMPL_setAlgorithm
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the search algorithm for the specified task. Default algorithm used is KPIECE1.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setAlgorithm(number taskHandle, number algorithm)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>algorithm</strong>: one of sim_ompl_algorithm_BiTRRT, sim_ompl_algorithm_BITstar, sim_ompl_algorithm_BKPIECE1,
+                              sim_ompl_algorithm_CForest, sim_ompl_algorithm_EST, sim_ompl_algorithm_FMT, sim_ompl_algorithm_KPIECE1,
+                              sim_ompl_algorithm_LazyPRM, sim_ompl_algorithm_LazyPRMstar, sim_ompl_algorithm_LazyRRT,
+                              sim_ompl_algorithm_LBKPIECE1, sim_ompl_algorithm_LBTRRT, sim_ompl_algorithm_PDST,
+                              sim_ompl_algorithm_PRM, sim_ompl_algorithm_PRMstar, sim_ompl_algorithm_pRRT, sim_ompl_algorithm_pSBL,
+                              sim_ompl_algorithm_RRT, sim_ompl_algorithm_RRTConnect, sim_ompl_algorithm_RRTstar,
+                              sim_ompl_algorithm_SBL, sim_ompl_algorithm_SPARS, sim_ompl_algorithm_SPARStwo, sim_ompl_algorithm_STRIDE,
+                              sim_ompl_algorithm_TRRT
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setCollisionPairs" id="simExtOMPL_setCollisionPairs"></a>simExtOMPL_setCollisionPairs
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the collision pairs for the specified task object.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setCollisionPairs(number taskHandle, table collisionPairHandles)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>collisionPairHandles</strong>: a table containing 2 entity handles for each collision pair. A collision pair is represented
+                              by a collider and a collidee, that will be tested against each other. The first pair
+                              could be used for robot self-collision testing, and a second pair could be used for
+                              robot-environment collision testing. The collider can be an object or a collection
+                              handle. The collidee can be an object or collection handle, or sim_handle_all, in
+                              which case the collider will be checked agains all other collidable objects in the
+                              scene.
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 0 if the operation failed.
+                           </div>
+                        </td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setGoal" id="simExtOMPL_setGoal"></a>simExtOMPL_setGoal
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the goal for the specificed task object by a dummy pair. One of the two dummies
+                           is part of the robot. The other dummy is fixed in the environment. When the task is
+                           solved, the position or pose of the two dummies will (approximatively) be the same.
+                           Dummy-dummy distances are relative to an optional reference dummy, and are evaluated
+                           using an optional metric<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setGoal(number taskHandle, number robotDummy, number goalDummy=0.001,
+                       table_4 metric=nil, number refDummy=nil)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>robotDummy</strong>: a dummy attached to the robot
+                           </div>
+                           <div><strong>goalDummy</strong>: a dummy fixed in the environment, representing the goal pose/position
+                           </div>
+                           <div><strong>tolerance</strong>: an optional tolerated dummy-dummy distance. Defaults to 0.001.
+                          </div>
+                           <div><strong>metric</strong>: an optional metric (x,y,z,angle) used to evaluate the dummy-dummy distance
+                           </div>
+                           <div><strong>refDummy</strong>: an optional reference dummy, relative to which the metric will be used
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setGoalCallback" id="simExtOMPL_setGoalCallback"></a>simExtOMPL_setGoalCallback
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set a custom goal callback for the specified task. The argument passed to the callback
+                           is the state to test for goal satisfaction. The return values must be a boolean indicating
+                           wether the goal is satisfied, and a float indicating the distance to the goal, i.e.:<br><br>boolean satisfied, number distance=goalSatisfied(table state)<br><br>If a distance to the goal is not known, a constant value can be used, but the performance
+                           of the algorithm will be worse.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setGoalCallback(number taskHandle, string callback)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>callback</strong>: the name of the Lua callback
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setGoalState" id="simExtOMPL_setGoalState"></a>simExtOMPL_setGoalState
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the goal state for the specified task object.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setGoalState(number taskHandle, table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>state</strong>: a table of numbers, whose size must be consistent with the robot's state space specified
+                              in this task object
+                           </div>
+                       </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setProjectionEvaluationCallback" id="simExtOMPL_setProjectionEvaluationCallback"></a>simExtOMPL_setProjectionEvaluationCallback
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set a custom projection evaluation. The argument of the callback will be a state,
+                           and the return value must be a table of numbers, with a size equal to the projectionSize
+                           argument, i.e.<br><br>table projection=evaluateProjection(table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setProjectionEvaluationCallback(number taskHandle, string
+                       callback, number projectionSize)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>callback</strong>: name of the Lua callback
+                           </div>
+                           <div><strong>projectionSize</strong>: size of the projection (usually 2 or 3)
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setStartState" id="simExtOMPL_setStartState"></a>simExtOMPL_setStartState
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the start state for the specified task object.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setStartState(number taskHandle, table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>state</strong>: a table of numbers, whose size must be consistent with the robot's state space specified
+                              in this task object
+                           </div>
+                       </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table><br><h3 class="subsectionBar"><a name="simExtOMPL_setStateSpace" id="simExtOMPL_setStateSpace"></a>simExtOMPL_setStateSpace
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the state space of this task object.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setStateSpace(number taskHandle, table stateSpaceHandles)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>stateSpaceHandles</strong>: a table of handles to state space components, created with <a href="#simExtOMPL_createStateSpace">simExtOMPL_createStateSpace</a></div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setStateValidationCallback" id="simExtOMPL_setStateValidationCallback"></a>simExtOMPL_setStateValidationCallback
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set a custom state validation. By default state validation is performed by collision
+                           checking, between robot's collision objects and environment's objects. By specifying
+                           a custom state validation, it is possible to perform any arbitrary check on a state
+                           to determine wether it is valid or not. Argument to the callback is the state to validate,
+                           and return value must be a boolean indicating the validity of the state, i.e.:<br><br>boolean valid=stateValidator(table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setStateValidationCallback(number taskHandle, string callback)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>callback</strong>: name of the Lua calback
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+                  
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setStateValidityCheckingResolution" id="simExtOMPL_setStateValidityCheckingResolution"></a>simExtOMPL_setStateValidityCheckingResolution
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the resolution of state validity checking, expressed as fraction of state space's extent. Default resolution is 0.01 which is 1% of the state space's extent.</td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setStateValidityCheckingResolution(number taskHandle, number resolution)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>resolution</strong>: resolution of state validity checking, expressed as fraction of state space's extent</div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 1 in case of success.</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setValidStateSamplerCallback" id="simExtOMPL_setValidStateSamplerCallback"></a>simExtOMPL_setValidStateSamplerCallback
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">The valid state sampler callbacks must generate valid states. There are two callbacks to implement:
+                        <ul>
+                        <li>the valid state sampling callback: table sampledState=sample()</li>
+                        <li>the near valid state sampling callback: table sampledState=sampleNear(table state, number distance)</li>
+                        </ul></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setValidStateSamplerCallback(number taskHandle, string callback, string nearCallback)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>callback</strong>: the name of the Lua callback for sampling a state</div>
+                           <div><strong>callbackNear</strong>: the name of the Lua callback for sampling near a given state within the given distance</div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 1 in case of success.</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  
+                  <br><h3 class="subsectionBar"><a name="simExtOMPL_setVerboseLevel" id="simExtOMPL_setVerboseLevel"></a>simExtOMPL_setVerboseLevel
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Set the verbosity level for messages printed to application console.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_setVerboseLevel(number taskHandle, number verboseLevel)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>verboseLevel</strong>: level of verbosity (positive integer), 0 to suppress any message
+                           </div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet"></td>
+                     </tr>
+                  </table>
+                  
+                  
+                  <br>
+                  <h3 class="subsectionBar"><a name="simExtOMPL_writeState" id="simExtOMPL_writeState"></a>simExtOMPL_writeState
+                  </h3>
+                  <table class="apiTable">
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftDescr">
+                           Description
+                           
+                        </td>
+                        <td class="apiTableRightDescr">Write the specified state to simulator.<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLSyn">Lua synopsis</td>
+                        <td class="apiTableRightLSyn">number result=simExtOMPL_writeState(number taskHandle, table state)<br></td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLParam">Lua parameters</td>
+                        <td class="apiTableRightLParam">
+                           <div><strong>taskHandle</strong>: a handle to a task object created with <a href="#simExtOMPL_createTask">simExtOMPL_createTask</a></div>
+                           <div><strong>state</strong>: state (vector)</div>
+                        </td>
+                     </tr>
+                     <tr class="apiTableTr">
+                        <td class="apiTableLeftLRet">Lua return values</td>
+                        <td class="apiTableRightLRet">
+                           <div><strong>result</strong>: 1 in case of success</div>
+                        </td>
+                     </tr>
+                  </table>
+                  
+                  
+                  
+                  <br><br></td>
+            </tr>
+         </table>
+      </div>
+   </body>
+</html>
