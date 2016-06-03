@@ -6,7 +6,7 @@ _____
 
 How it works:
 
-1) In a first window : cd play/V-REP_PRO_EDU_V3_3_0_64_Linux
+1) In a first window : cd automatic-car/play/V-REP_PRO_EDU_V3_3_0_64_Linux
 
 ./vrep.sh
 
